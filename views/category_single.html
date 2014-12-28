@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+
+<html>
+<head lang="en">
+	<meta charset="UTF-8">
+	<title>Single Category</title>
+	<link rel="stylesheet" type="css/text" href="./public/stylesheets/style.css"/>
+</head>
+<body>
+<p>Nav: <a href="/">Home</a>&nbsp;&nbsp;<a href="/categories">Categories</a></p>
+<hr>
+	{{#category}}
+<p style="margin:0px 0px 0px 0px;"><a href="/categories/{{id}}/subscribe">Subscribe to this Discussion Topic</a></p>
+<hr>
+	
+<table>
+	<tr>
+		<td><h2>{{category_name}}</h2></td>
+		<td>Vote: </td>
+		<td>
+			<form method="POST" action="/categories/{{id}}/up_vote"><input type="hidden" name="category_id"/><button><a href="http://imgur.com/ml389xa"><img src="http://i.imgur.com/ml389xa.png" title="source: imgur.com" /></a></button></form>
+		</td>
+		<td>
+			<form method="POST" action="/categories/{{id}}/down_vote"><input type="hidden" name="category_id"/><button><a href="http://imgur.com/enCOGVj"><img src="http://i.imgur.com/enCOGVj.png" title="source: imgur.com" /></a></button></form>
+		</td>
+	</tr>
+	<tr>
+		<td><h3>{{description}}</h3></td>
+	</tr>
+</table>
+
+<h3>Add a New Post</h3>
+<form method="POST" action="/categories/{{id}}">
+		<input type="hidden" name="category_id"/>
+	<label>Title:
+		<input type="text" size="50" name="title"/>
+	</label>
+		<br>
+	<label>Body:
+		<input type="text" size="100" name="body"/>
+	</label>
+		<br>
+	<button style="background:cyan;">SUBMIT</button>
+	{{/category}}
+</form>
+<!-- 	<p style="margin: -20px 0px 10px 0px"><a href="/posts/:category_id/new">Add Post</a></p> -->
+
+	<h2>Posts</h2>
+	{{#posts}}
+	<h4>{{title}}</h4>
+	<p style="margin-top:-20px;">{{body}}</p>
+	{{/posts}}
+
+</body>
+</html>

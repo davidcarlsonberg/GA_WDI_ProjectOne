@@ -10,13 +10,16 @@
 <body>
 	<p>Nav: <a href="/">Home</a>&nbsp;&nbsp;<a href="/categories">Categories</a></p>
 <hr>
-<h1>Welcome to the Categories!</h1>
+<h1>Welcome to the Discussion Topics!</h1>
+<p style="margin:-20px 0px 20px 2px;"><a href="/categories/new">Create a New Category</a></p>
 
 {{#categories}}
 <table>
 	<tr>
-	<td><a href="/categories/{{category_name}}">{{category_name}}</a>&nbsp;&nbsp;</td>
-	<td>{{description}}</td>
+		<!-- <td><form method="POST" action="/categories/{{id}}/vote"><button>UpVote</button></form><form method="POST" action="/categories/{{id}}"><button>DownVote</button></form></td> -->
+		
+		<td style="width:200px;"><a href="/categories/{{id}}">{{category_name}}</a>&nbsp;&nbsp;</td>
+		<td>{{description}}</td>
 	</tr>
 </table>
 {{/categories}}

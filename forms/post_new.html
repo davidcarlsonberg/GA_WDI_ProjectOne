@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>New Post Form</title>
+	<link rel="stylesheet" type="css/text" href="./view/stylesheets/style.css"/>
+</head>
+
+<body>
+<h2>Add a New Post</h2>
+<form method="POST" action="/categories/{{category_id}}"
+		<input type="hidden" name="category_id"/>
+	<label>Title: </label>
+		<input type="text" size="50" name="title"/>
+	<label>Body: </label>
+		<input type="text" size="250" name="body"/>
+	<button>SUBMIT</button>
+</form>
+</body>
+
+</html>
