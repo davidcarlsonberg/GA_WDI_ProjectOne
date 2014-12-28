@@ -157,3 +157,17 @@ get "/categories/:category_id/subscribe" do
 	Mustache.render(File.read('./forms/category_subscribe_form.html'), 
 		category: category_to_display, posts: posts_to_display)
 end
+
+post "/categories/:category_id/subscribe" do
+	all_categories = get_all_categories
+
+	category_to_display = []
+	all_categories.each do |x|
+		if x[:id] == params[:category_id].to_i
+			category_to_display.push(x)
+		end
+	end
+
+	Subscription.create(user_id: 0, post_id: 0, ######)
+	redirect "/categories/#{params[:category_id]}"
+end
