@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+
+<form method="POST" action="/categories/delete">
+	<input type="hidden" name="_method" value="DELETE"/>
+	
+	<label>Which Category would you like to delete?</label>	
+		<select name="id">
+			{{#category}}
+			<option value="{{id}}">{{category_name}}</option>
+			{{/category}}
+		</select>
+
+	<button>CONFIRM</button>
+</form>
+
+</html>

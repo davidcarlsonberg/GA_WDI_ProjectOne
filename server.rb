@@ -46,6 +46,37 @@ post "/categories" do
 	redirect "/categories"
 end
 
+get "/categories/delete" do
+	all_categories = get_all_categories
+	Mustache.render(File.read('./forms/category_delete_form.html'), category: all_categories)
+end
+delete "/categories/delete" do
+	all_posts = get_all_posts
+	all_categories = get_all_categories
+
+	category_to_display = []
+	all_categories.each do |x|
+		if params[:id].to_i == x[:id] 
+			category_to_display.push(x)
+		end
+	end
+
+	posts_in_category_to_delete = []
+	all_posts.each do |x|
+		if params[:id].to_i == x[:category_id]
+			posts_in_category_to_delete.push(x)
+		end
+	end
+
+	if posts_in_category_to_delete.length > 0
+		Mustache.render(File.read('./views/category_cannot_delete_because_posts_exist.html'), category: category_to_display)
+	else
+		Category.delete(params[:id].to_i)
+		redirect "/categories"
+	end
+	
+end
+
 get "/categories/:category_id" do
 	all_categories = get_all_categories
 	all_posts = get_all_posts
@@ -127,7 +158,7 @@ post "/categories/:category_id/down_vote" do
 			category_to_update = x
 		end
 	end
-	Category.update(params[:category_id].to_i, down_vote: (category_to_update[:down_vote] + 1))
+	Category.update(params[:category_id].to_i, up_vote: (category_to_update[:up_vote] - 1))
 	redirect "/categories/#{params[:category_id]}"
 end
 

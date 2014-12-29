@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8"/>
+	<title>Cannot Delete Category Because Posts Exist</title>
+	<!-- <link rel="stylesheet" type="text/css" href="../public/stylesheets/style.css"/> -->
+</head>
+
+<body>
+	<p>Nav: <a href="/">Home</a>&nbsp;&nbsp;<a href="/categories">Categories</a></p>
+	<hr>
+{{#category}}
+	<h2>Sorry, Category <span style="color:red;">{{category_name}}</span> has posts in it and cannot be deleted.</h2>
+{{/category}}
+
+</body>
+
+</html>
+
