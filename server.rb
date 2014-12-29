@@ -3,6 +3,7 @@ require './lib/classes.rb'
 require 'sinatra'
 require 'sinatra/reloader'
 require 'mustache'
+require 'twilio-ruby'
 require 'pry'
 
 # methods for getting data from database HERE
@@ -98,7 +99,6 @@ get "/categories/:category_id" do
 	Mustache.render(File.read('./views/category_single.html'), 
 		category: category_to_display, posts: posts_to_display)
 end
-
 post "/categories/:category_id" do
 	all_subs = get_all_subs
 	all_posts = get_all_posts
@@ -111,7 +111,6 @@ post "/categories/:category_id" do
 		end
 	end
 	#now we have the cell(s) that have subscribed to the given category in an array
-
 	email_array = []
 	all_subs.each do |x|
 		if params[:category_id].to_i == x[:category_id]
@@ -119,7 +118,6 @@ post "/categories/:category_id" do
 		end
 	end
 	#now we have the email(s) that have subscribed to the given categry in an array
-
 	posts_to_sort = []
 	all_posts.each do |x|
 		if params[:category_id].to_i == x[:category_id]
@@ -127,14 +125,28 @@ post "/categories/:category_id" do
 		end
 	end
 
+
 	ids_of_posts_to_sort = posts_to_sort.map {|x| x[:id]}
 	most_recent_post = ids_of_posts_to_sort.max
 
 	post_to_send = posts_to_sort.find {|x| x[:id] == most_recent_post}
-	#now we have the most recent post to send and the information for where to send it
 
-	# now use Twilio and SendGrid (oy)
+	binding.pry
 
+	category_name = Category.find(params[:category_id])
+	twilio_number = "+12039042566"
+	cell_array.each do |indiv_number|
+		account_sid = "ACea0b3bc7d136da7ae7f867e1ca4984de"
+		auth_token = "79d901fe9ef2849fcd6d2907be12ce04"
+		@client = Twilio::REST::Client.new account_sid, auth_token
+		message = @client.account.messages.create(
+			:body => "Museic category #{category_name[:category_name]} has been updated. TITLE: #{post_to_send[:title]} BODY: #{post_to_send[:body]}",
+			:to => "#{indiv_number}",
+			:from => "#{twilio_number}"
+		)
+		puts message.sid
+	end
+	
 	redirect "/categories/#{params[:category_id]}"
 end
 
@@ -179,8 +191,8 @@ get "/categories/:category_id/subscribe" do
 end
 
 post "/categories/:category_id/subscribe" do
-	Subscription.create(user_id: 0, category_id: params[:category_id].to_i, post_id: 0, comment_id: 0, cell: params[:cell], email: params[:email])
-
+	cell = params[:cell].insert(0, "+1").gsub("-","")
+	Subscription.create(user_id: 0, category_id: params[:category_id].to_i, post_id: 0, comment_id: 0, cell: cell, email: params[:email])
 	redirect "/categories/#{params[:category_id]}"
 end
 
