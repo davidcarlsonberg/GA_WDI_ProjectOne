@@ -62,21 +62,20 @@ get "/categories/:category_id" do
 	Mustache.render(File.read('./views/category_single.html'), 
 		category: category_to_display, posts: posts_to_display)
 end
-# get "/categories/:category_id/new_post" do
-# 	all_categories = get_all_categories
-# 	all_posts = get_all_posts
 
-# 	category_to_post_to = []
-# 	all_categories.each do |x|
-# 		if x[:id] == params[:category_id].to_i
-# 			category_to_post_to.push(x)
-# 		end
-# 	end
-
-# 	Mustache.render(File.read('./forms/post_new.html'), category: category_to_post_to)
-# end
 post "/categories/:category_id" do
 	Post.create(category_id: params[:category_id].to_i, title: params[:title], body: params[:body], create_date: Date.current, up_vote: 0, down_vote: 0)
+
+	#conditional: first search in subscriptions for category_id == params[:category_id] in this post section. if that exists, then pull the cell number and/or email address
+
+	# then get the post with highest (.max?) id from category(params[:category_id]) 
+	# if in posts category_id == category(params[:category_id]) then return post with highest id
+
+	# now you have the cell number and the email and the newest post to communicate
+
+	# now use Twilio and SendGrid (oy)
+
+
 	redirect "/categories/#{params[:category_id]}"
 end
 
@@ -103,6 +102,30 @@ post "/categories/:category_id/down_vote" do
 	Category.update(params[:category_id].to_i, down_vote: (category_to_update[:down_vote] + 1))
 	redirect "/categories/#{params[:category_id]}"
 end
+
+#SUBSCRIPTIONS PAGES
+get "/categories/:category_id/subscribe" do
+	all_categories = get_all_categories
+	all_posts = get_all_posts
+
+	category_to_display = {}
+	all_categories.each do |x|
+		if x[:id] == params[:category_id].to_i
+			category_to_display = x
+		end
+	end
+
+	Mustache.render(File.read('./forms/category_subscribe_form.html'), 
+		category_to_display)
+end
+
+post "/categories/:category_id/subscribe" do
+	Subscription.create(user_id: 0, category_id: params[:category_id].to_i, post_id: 0, comment_id: 0, cell: params[:cell], email: params[:email])
+
+	redirect "/categories/#{params[:category_id]}"
+end
+
+
 
 #POSTS PAGES
 # get "/posts" do
@@ -133,41 +156,4 @@ get "/users/new" do
 end
 get "/users/user_id" do
 
-end
-
-#SUBSCRIPTIONS PAGES
-get "/categories/:category_id/subscribe" do
-	all_categories = get_all_categories
-	all_posts = get_all_posts
-
-	category_to_display = []
-	all_categories.each do |x|
-		if x[:id] == params[:category_id].to_i
-			category_to_display.push(x)
-		end
-	end
-
-	posts_to_display = []
-	all_posts.each do |x|
-		if x[:category_id] == params[:category_id].to_i
-			posts_to_display.push(x)
-		end
-	end
-
-	Mustache.render(File.read('./forms/category_subscribe_form.html'), 
-		category: category_to_display, posts: posts_to_display)
-end
-
-post "/categories/:category_id/subscribe" do
-	all_categories = get_all_categories
-
-	category_to_display = []
-	all_categories.each do |x|
-		if x[:id] == params[:category_id].to_i
-			category_to_display.push(x)
-		end
-	end
-
-	Subscription.create(user_id: 0, post_id: 0, ######)
-	redirect "/categories/#{params[:category_id]}"
 end

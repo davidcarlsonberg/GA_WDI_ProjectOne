@@ -1,12 +1,10 @@
-<form method="POST" action="/categories/{{category_id}}">
-	<input type="hidden" name="category_id"/>
-	<label>Cell for text updates: 
-		<input type="text" placeholder="XXX-XXX-XXXX" name="phone"/>
-	</label>
+<form method="POST" action="/categories/{{id}}/subscribe">
+	<input type="hidden" value ="{{id}}" name="category_id"/>
+	<label>Cell for text updates: </label>
+		<input type="text" placeholder="XXX-XXX-XXXX" name="cell"/>
 	<br><br>
-	<label>Email for email updates:
+	<label>Email for email updates: </label>
 		<input type="text" placeholder="xxx@xxx.xxx" name="email"/>
-	</label>
 	<br><br>
 	<button>SUBSCRIBE</button>
 </form>
