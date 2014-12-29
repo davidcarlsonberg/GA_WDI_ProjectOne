@@ -16,6 +16,11 @@ def get_all_posts
 	all_posts
 end
 
+def get_all_subs
+	all_subscriptions = Subscription.all.each
+	all_subscriptions
+end
+
 #HOMEPAGE
 get "/" do
 	File.read("./views/homepage.html")	
@@ -64,17 +69,40 @@ get "/categories/:category_id" do
 end
 
 post "/categories/:category_id" do
+	all_subs = get_all_subs
+	all_posts = get_all_posts
 	Post.create(category_id: params[:category_id].to_i, title: params[:title], body: params[:body], create_date: Date.current, up_vote: 0, down_vote: 0)
 
-	#conditional: first search in subscriptions for category_id == params[:category_id] in this post section. if that exists, then pull the cell number and/or email address
+	cell_array = []
+	all_subs.each do |x|
+		if params[:category_id].to_i == x[:category_id]
+			cell_array.push(x[:cell])
+		end
+	end
+	#now we have the cell(s) that have subscribed to the given category in an array
 
-	# then get the post with highest (.max?) id from category(params[:category_id]) 
-	# if in posts category_id == category(params[:category_id]) then return post with highest id
+	email_array = []
+	all_subs.each do |x|
+		if params[:category_id].to_i == x[:category_id]
+			email_array.push(x[:email])
+		end
+	end
+	#now we have the email(s) that have subscribed to the given categry in an array
 
-	# now you have the cell number and the email and the newest post to communicate
+	posts_to_sort = []
+	all_posts.each do |x|
+		if params[:category_id].to_i == x[:category_id]
+			posts_to_sort.push(x)
+		end
+	end
+
+	ids_of_posts_to_sort = posts_to_sort.map {|x| x[:id]}
+	most_recent_post = ids_of_posts_to_sort.max
+
+	post_to_send = posts_to_sort.find {|x| x[:id] == most_recent_post}
+	#now we have the most recent post to send and the information for where to send it
 
 	# now use Twilio and SendGrid (oy)
-
 
 	redirect "/categories/#{params[:category_id]}"
 end
