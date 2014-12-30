@@ -8,19 +8,14 @@
 </head>
 
 <body>
-<p>Nav: <a href="/">Home</a>&nbsp;&nbsp;<a href="/categories">Categories</a></p>
+<p>Nav: <a href="/">Home</a>&nbsp;&nbsp;<a href="/categories">Discussion Topics</a></p>
 <hr>
-	<h1>Welcome to the posts page...basically a feed of posts irregardless of category</h1>
 
-	{{posts}}
-	<table>
-		<th>{{title}}</th>
-			<tr>
-				<td>{{body}}</td>
-			</tr>
-	</table>
-	{{posts}}
-	
+{{#post}}
+	<h4>{{title}}</h4>
+	<p>{{body}}</p>
+{{/post}}
+
 <body>
 
 </html>

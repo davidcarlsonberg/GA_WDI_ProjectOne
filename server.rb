@@ -7,6 +7,7 @@ require 'twilio-ruby'
 require 'sendgrid-ruby'
 require 'will_paginate'
 require 'will_paginate/active_record'
+require 'will_paginate/array'
 require 'pry'
 
 def get_all_categories
@@ -78,7 +79,7 @@ delete "/categories/delete" do
 	
 end
 
-get "/categories/:category_id" do
+get "/categories/:category_id/page/:page" do
 	all_categories = get_all_categories
 	all_posts = get_all_posts
 
@@ -90,20 +91,52 @@ get "/categories/:category_id" do
 	end
 
 	posts_to_display = []
+	expired_posts = []
 	all_posts.each do |x|
-		if x[:category_id] == params[:category_id].to_i
+		if (x[:category_id] == params[:category_id].to_i) && 
+			(x[:expiration_date] == nil || x[:expiration_date] > Date.current)
 			posts_to_display.push(x)
+		elsif x[:category_id] == params[:category_id].to_i && x[:expiration_date] != nil && x[:expiration_date] < Date.current
+			expired_posts.push(x)
 		end
 	end
 
-	Mustache.render(File.read('./views/category_single.html'), 
-		category: category_to_display, posts: posts_to_display)
-end
-post "/categories/:category_id" do
-	all_subs = get_all_subs
-	all_posts = get_all_posts
-	Post.create(category_id: params[:category_id].to_i, title: params[:title], body: params[:body], create_date: Date.current, up_vote: 0, down_vote: 0)
+	pagination = posts_to_display.paginate(:page => params[:page], :per_page => 10)
 
+	Mustache.render(File.read('./views/category_single.html'), 
+		category: category_to_display, posts: posts_to_display, expired_posts: expired_posts, pagination: pagination, next_page: pagination.next_page, previous_page: pagination.previous_page)
+end
+
+get "/categories/:category_id/posts/:post_id" do
+	all_categories = get_all_categories
+	all_posts = get_all_posts
+
+	post_to_display = []
+	all_posts.each do |x|
+		if params[:post_id].to_i == x[:id]
+			post_to_display = x
+		end
+	end
+
+	Mustache.render(File.read('./views/post_single.html'), post: post_to_display)	
+end
+
+get "/categories/:category_id/expired_posts" do
+	all_posts = get_all_posts
+	expired_posts = []
+	all_posts.each do |x|
+		if x[:category_id] == params[:category_id].to_i && x[:expiration_date] != nil && x[:expiration_date] < Date.current
+			expired_posts.push(x)
+		end
+	end
+	Mustache.render(File.read('./views/posts_expired.html'), expired_posts: expired_posts)
+end
+
+post "/categories/:category_id" do
+	Post.create(category_id: params[:category_id].to_i, title: params[:title], body: params[:body], create_date: Date.current, up_vote: 0, down_vote: 0, expiration_date: params[:expiration_date])
+
+		all_subs = get_all_subs
+		all_posts = get_all_posts
 #TWILIO
 	cell_array = []
 	all_subs.each do |x|
@@ -154,10 +187,10 @@ post "/categories/:category_id" do
 			from: "davidcarlsonberg@gmail.com",
 			subject: "Museic category #{category_name[:category_name]} has been updated.",
 			text: "TITLE: #{post_to_send[:title]} BODY: #{post_to_send[:body]}",
-			html: "TITLE: #{post_to_send[:title]} BODY: #{post_to_send[:body]}"
+			html: "<h4>TITLE: #{post_to_send[:title]}</h4> <br><p>BODY: #{post_to_send[:body]}</p>"
 		))
 	end
-	redirect "/categories/#{params[:category_id]}"
+	redirect "/categories/#{params[:category_id]}/page/1"
 end
 
 post "/categories/:category_id/up_vote" do
@@ -169,7 +202,7 @@ post "/categories/:category_id/up_vote" do
 		end
 	end
 	Category.update(params[:category_id].to_i, up_vote: (category_to_update[:up_vote] + 1))
-	redirect "/categories/#{params[:category_id]}"
+	redirect "/categories/#{params[:category_id]}/page/1"
 end
 
 post "/categories/:category_id/down_vote" do
@@ -181,13 +214,27 @@ post "/categories/:category_id/down_vote" do
 		end
 	end
 	Category.update(params[:category_id].to_i, up_vote: (category_to_update[:up_vote] - 1))
-	redirect "/categories/#{params[:category_id]}"
+	redirect "/categories/#{params[:category_id]}/page/1"
 end
 
 #SUBSCRIPTIONS PAGES
 get "/categories/:category_id/subscribe" do
 	all_categories = get_all_categories
-	all_posts = get_all_posts
+
+	category_to_display = {}
+	all_categories.each do |x|
+		if x[:id] == params[:category_id].to_i
+			category_to_display = x
+		end
+	end
+	Mustache.render(File.read('./forms/category_subscribe_form.html'), 
+		category_to_display)
+end
+
+post "/categories/:category_id/subscribe" do
+	cell = params[:cell].insert(0, "+1").gsub("-","")
+	all_subs = get_all_subs
+	all_categories = get_all_categories
 
 	category_to_display = {}
 	all_categories.each do |x|
@@ -196,29 +243,58 @@ get "/categories/:category_id/subscribe" do
 		end
 	end
 
-	Mustache.render(File.read('./forms/category_subscribe_form.html'), 
-		category_to_display)
+
+	all_subs.map {|x| x }
+	
+	
+	# all_subs.each do |x|
+	# 	if (x[:cell] == cell || x[:email] == params[:email]) && (params[:category_id].to_i == x[:category_id])
+	# 		Mustache.render(File.read('./views/already_subscribed.html'), category: category_to_display)
+	# 	else
+	# 		Subscription.create(user_id: 0, category_id: params[:category_id].to_i, post_id: 0, comment_id: 0, cell: cell, email: params[:email])
+	# 		redirect "/categories/#{params[:category_id]}/page/1"
+	# 	end
+	# end
+
 end
 
-post "/categories/:category_id/subscribe" do
+get "/categories/:category_id/unsubscribe" do
+	all_categories = get_all_categories
+
+	category_to_display = {}
+	all_categories.each do |x|
+		if x[:id] == params[:category_id].to_i
+			category_to_display = x
+		end
+	end
+	Mustache.render(File.read('./forms/category_unsubscribe_form.html'), 
+		category_to_display)
+end
+delete "/categories/:category_id/unsubscribe" do
+	all_subs = get_all_subs
 	cell = params[:cell].insert(0, "+1").gsub("-","")
-	Subscription.create(user_id: 0, category_id: params[:category_id].to_i, post_id: 0, comment_id: 0, cell: cell, email: params[:email])
-	redirect "/categories/#{params[:category_id]}"
+
+	subscription_to_delete = {}
+	all_subs.each do |x|
+		if x[:category_id] == params[:category_id].to_i && (x[:cell] == cell || x[:email] == params[:email])
+			subscription_to_delete = x
+		# elsif x[:category_id] == params[:category_id] && x[:email] == params[:email]
+		# 	subscription_to_delete = x
+		end
+	end
+		binding.pry
+	Subscription.delete(subscription_to_delete[:id])
+
+	redirect "/categories/#{params[:category_id]}/page/1"
 end
 
 
 
 #POSTS PAGES
-get "/posts" do
-	all_posts = get_all_posts
-	Mustache.render(File.read('./views/posts.html'), posts: all_posts)
+get "/posts/:page" do
+	pagination = Post.paginate(:page => params[:page], :per_page => 10).to_ary
+	Mustache.render(File.read('./views/posts_by_page.html'), pagination: pagination, next_page: pagination.next_page, previous_page: pagination.previous_page)
 end
-
-#PAGINATION OF POSTS...NOT WORKING...NEED TO RENDER POSTS AS STRINGS
-# get "/posts/:page" do
-# 	@posts = Post.paginate(:page => params[:page], :per_page => 10)
-# end
-
 
 
 

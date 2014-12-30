@@ -7,10 +7,15 @@
 	<!-- <link rel="stylesheet" type="css/text" href="./public/stylesheets/style.css"/> -->
 </head>
 <body>
-<p>Nav: <a href="/">Home</a>&nbsp;&nbsp;<a href="/categories">Categories</a></p>
+<p>Nav: <a href="/">Home</a>&nbsp;&nbsp;<a href="/categories">Discussion Topics</a></p>
 <hr>
-	{{#category}}
-<p style="margin:0px 0px 0px 0px;"><a href="/categories/{{id}}/subscribe">Subscribe to this Discussion Topic</a></p>
+
+{{#category}}
+
+<p style="margin:0px 0px 0px 0px;"><a href="/categories/{{id}}/subscribe">Subscribe to Discussion Topic: {{category_name}}</a></p>
+<br>
+<p style="margin:0px 0px 0px 0px;"><a href="/categories/{{id}}/unsubscribe">Unsubscribe to Discussion Topic: {{category_name}}</a></p>
+
 <hr>
 	
 <table>
@@ -28,10 +33,11 @@
 
 	<tr>
 		<td>Vote:</td>
+	</tr>
+	<tr>
 		<td>
 			<form method="POST" action="/categories/{{id}}/up_vote"><input type="hidden" name="category_id"/><button><a href="http://imgur.com/ml389xa"><img src="http://i.imgur.com/ml389xa.png" title="source: imgur.com" /></a></button></form>
-		</td>
-		<td>
+		
 			<form method="POST" action="/categories/{{id}}/down_vote"><input type="hidden" name="category_id"/><button><a href="http://imgur.com/enCOGVj"><img src="http://i.imgur.com/enCOGVj.png" title="source: imgur.com" /></a></button></form>
 		</td>
 	</tr>
@@ -40,24 +46,46 @@
 <h3>Add a New Post</h3>
 <form method="POST" action="/categories/{{id}}">
 		<input type="hidden" name="category_id"/>
-	<label>Title:
+	<label>Title:</label>
 		<input type="text" size="50" name="title"/>
-	</label>
 		<br>
-	<label>Body:
+	<label>Body:</label>
 		<input type="text" size="100" name="body"/>
-	</label>
 		<br>
+		<label>Expiration Date (Optional):</label>
+		<input type="text" size="25" placeholder="YYYY-MM-DD" name="expiration_date"/>
+		<br><br>
 	<button style="background:cyan;">SUBMIT</button>
-	{{/category}}
+	
 </form>
 <!-- 	<p style="margin: -20px 0px 10px 0px"><a href="/posts/:category_id/new">Add Post</a></p> -->
 	<hr>
-	<h2>Posts</h2>
-	{{#posts}}
-	<h4>{{title}}</h4>
+	<h2>Current Posts</h2>
+	{{#previous_page}}
+		<a href="/categories/{{id}}/page/{{previous_page}}">Previous Page</a>
+	{{/previous_page}}
+	{{#next_page}}
+		<a href="/categories/{{id}}/page/{{next_page}}">Next Page</a>
+	{{/next_page}}
+	
+	{{#pagination}}
+	<h4><a href="/categories/{{category_id}}/posts/{{id}}">{{title}}</a>&nbsp;<span style="font-size:10px;">created: {{create_date}}</span></h4>
 	<p style="margin-top:-20px;">{{body}}</p>
-	{{/posts}}
+	{{/pagination}}
+
+	{{#previous_page}}
+		<a href="/categories/{{id}}/page/{{previous_page}}">Previous Page</a>
+	{{/previous_page}}
+	{{#next_page}}
+		<a href="/categories/{{id}}/page/{{next_page}}">Next Page</a>
+	{{/next_page}}
+	<hr>
+
+{{/category}}
+
+	{{#expired_posts}}
+	<h4><a href="/categories/{{category_id}}/expired_posts">View Expired Posts</a></hr>
+	{{/expired_posts}}
 
 </body>
 </html>

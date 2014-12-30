@@ -1,0 +1,11 @@
+<form method="POST" action="/categories/{{id}}/unsubscribe">
+	<input type="hidden" name="_method" value="DELETE"/>
+	<input type="hidden" value ="{{id}}" name="category_id"/>
+	<label>Cell you used to sign up: </label>
+		<input type="text" placeholder="xxx-xxx-xxxx" name="cell"/>
+	<br><br>
+	<label>Email you used to sign up: </label>
+		<input type="text" placeholder="xxx@xxx.xxx" name="email"/>
+	<br><br>
+	<button>UNSUBSCRIBE</button>
+</form>

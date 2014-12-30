@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8"/>
+	<title>Expired Posts</title>
+<!-- 	<link rel="stylesheet" type="text/css" href="../public/stylesheets/style.css"/> -->
+</head>
+
+<body>
+
+<p>Nav: <a href="/">Home</a>&nbsp;&nbsp;<a href="/categories">Discussion Topics</a></p>
+<hr>
+
+{{#expired_posts}}
+	<h4>{{title}}&nbsp;<span style="font-size:10px;">create date: {{create_date}}</span></h4>
+	<p style="margin-top:-20px;">{{body}}</p>
+{{/expired_posts}}
+
+</body>
+</html>

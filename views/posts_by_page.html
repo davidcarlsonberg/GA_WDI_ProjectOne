@@ -8,17 +8,29 @@
 </head>
 
 <body>
-
 	<p>Nav: <a href="/">Home</a>&nbsp;&nbsp;<a href="/categories">Discussion Topics</a></p>
 	<hr>
 
 	<h1>Welcome to the posts page...basically a feed of posts irregardless of category...Fun!</h1>
 
-	{{#posts}}
-		<h3>{{title}}</h3>
+	{{#previous_page}}
+		<a href="/posts/{{previous_page}}">Previous Page</a>
+	{{/previous_page}}
+	{{#next_page}}
+		<a href="/posts/{{next_page}}">Next Page</a>
+	{{/next_page}}
+
+	{{#pagination}}
+		<h4>{{title}}</h4>
 		<p style="margin-top:-20px;">{{body}}</p>
-	{{/posts}}
-	
+	{{/pagination}}
+
+	{{#previous_page}}
+		<a href="/posts/{{previous_page}}">Previous Page</a>
+	{{/previous_page}}
+	{{#next_page}}
+		<a href="/posts/{{next_page}}">Next Page</a>
+	{{/next_page}}
 <body>
 
 </html>
