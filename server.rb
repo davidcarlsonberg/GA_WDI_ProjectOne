@@ -243,10 +243,20 @@ post "/categories/:category_id/subscribe" do
 		end
 	end
 
+	sub = []
+	all_subs.each do |x|
+		if (x[:cell] == cell || x[:email] == params[:email]) && x[:category_id] == params[:category_id].to_i
+			sub.push(x)
+		end
+	end
 
-	all_subs.map {|x| x }
-	
-	
+	if sub.empty?
+		Subscription.create(user_id: 0, category_id: params[:category_id].to_i, post_id: 0, comment_id: 0, cell: cell, email: params[:email])
+		redirect "/categories/#{params[:category_id]}/page/1"
+	else
+		Mustache.render(File.read('./views/already_subscribed.html'), category: category_to_display)
+	end
+
 	# all_subs.each do |x|
 	# 	if (x[:cell] == cell || x[:email] == params[:email]) && (params[:category_id].to_i == x[:category_id])
 	# 		Mustache.render(File.read('./views/already_subscribed.html'), category: category_to_display)

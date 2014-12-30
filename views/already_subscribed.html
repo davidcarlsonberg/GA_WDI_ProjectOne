@@ -9,11 +9,11 @@
 </head>
 
 <body>
-	
+
 	<p>Nav: <a href="/">Home</a>&nbsp;&nbsp;<a href="/categories">Discussion Topics</a></p>
 	<hr>
 {{#category}}
-	<h2>You are already subscribed to the Discussion Topic: <span style="color:red;">{{category_name}}</span> and cannot subscribe again. If you would like to alter your subscription preferences, please <a href="/categories/{{id}}/unsubscribe">unsubscribe</a> and <a href="/categories/{{id}}/subscribe.">resubscribe</a></h2>
+	<h2>You are already subscribed to the Discussion Topic: <span style="color:red;">{{category_name}}</span> and cannot subscribe again. If you would like to alter your subscription preferences, please <a href="/categories/{{id}}/unsubscribe">unsubscribe</a> and <a href="/categories/{{id}}/subscribe">resubscribe</a></h2>
 {{/category}}
 
 </body>
