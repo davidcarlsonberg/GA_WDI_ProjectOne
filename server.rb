@@ -5,6 +5,8 @@ require 'sinatra/reloader'
 require 'mustache'
 require 'twilio-ruby'
 require 'sendgrid-ruby'
+require 'will_paginate'
+require 'will_paginate/active_record'
 require 'pry'
 
 def get_all_categories
@@ -208,31 +210,36 @@ end
 
 #POSTS PAGES
 get "/posts" do
-	File.read ("./views/posts.html")
+	all_posts = get_all_posts
+	Mustache.render(File.read('./views/posts.html'), posts: all_posts)
 end
-get "/posts/new" do
-end
-get "/posts/:post_id" do
-end
+
+#PAGINATION OF POSTS...NOT WORKING...NEED TO RENDER POSTS AS STRINGS
+# get "/posts/:page" do
+# 	@posts = Post.paginate(:page => params[:page], :per_page => 10)
+# end
+
+
+
 
 #COMMENTS PAGES (necessary?)
-get "/comments" do
-	File.read ("./views/comments.html")
-end
-get "/comments/new" do
+# get "/comments" do
+# 	File.read ("./views/comments.html")
+# end
+# get "/comments/new" do
 
-end
-get "/comments/comment_id" do
+# end
+# get "/comments/comment_id" do
 
-end
+# end
 
 #USERS PAGES
-get "/users" do
+# get "/users" do
 
-end
-get "/users/new" do
+# end
+# get "/users/new" do
 
-end
-get "/users/user_id" do
+# end
+# get "/users/user_id" do
 
-end
+# end
