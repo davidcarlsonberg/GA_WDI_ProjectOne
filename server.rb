@@ -139,23 +139,22 @@ post "/categories/:category_id" do
 			:to => "#{indiv_number}",
 			:from => "#{twilio_number}"
 		)
-		puts message.sid
 	end
 
 #SENDGRID
 	client = SendGrid::Client.new(
-		api_user: 'davidcarlsonberg@gmail.com',
-		api_key: 'SENDGRID_PASSWORD'
+		api_user: "davidcarlsonberg",
+		api_key: "SendGrid195"
 	)
-	client.send(SendGrid::Mail.new(
-		to: 'example@example.com',
-		from: 'taco@cat.limo',
-		subject: 'Hello world!',
-		text: 'Hi there!',
-		html: '<b>Hi there!</b>'
-	))
-	puts client.send(mail)
-
+	email_array.each do |indiv_email|
+		client.send(SendGrid::Mail.new(
+			to: "#{indiv_email}",
+			from: "davidcarlsonberg@gmail.com",
+			subject: "Museic category #{category_name[:category_name]} has been updated.",
+			text: "TITLE: #{post_to_send[:title]} BODY: #{post_to_send[:body]}",
+			html: "TITLE: #{post_to_send[:title]} BODY: #{post_to_send[:body]}"
+		))
+	end
 	redirect "/categories/#{params[:category_id]}"
 end
 
@@ -208,13 +207,13 @@ end
 
 
 #POSTS PAGES
-# get "/posts" do
-# 	File.read ("./views/posts.html")
-# end
-# get "/posts/new" do
-# end
-# get "/posts/:post_id" do
-# end
+get "/posts" do
+	File.read ("./views/posts.html")
+end
+get "/posts/new" do
+end
+get "/posts/:post_id" do
+end
 
 #COMMENTS PAGES (necessary?)
 get "/comments" do
