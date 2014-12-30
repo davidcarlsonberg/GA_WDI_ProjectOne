@@ -4,19 +4,17 @@ require 'sinatra'
 require 'sinatra/reloader'
 require 'mustache'
 require 'twilio-ruby'
+require 'sendgrid-ruby'
 require 'pry'
 
-# methods for getting data from database HERE
 def get_all_categories
 	all_categories = Category.all.each
 	all_categories
 end
-
 def get_all_posts
 	all_posts = Post.all.each
 	all_posts
 end
-
 def get_all_subs
 	all_subscriptions = Subscription.all.each
 	all_subscriptions
@@ -27,7 +25,7 @@ get "/" do
 	File.read("./views/homepage.html")	
 end
 
-#CREATOR
+#CREATOR PAGE
 get "/creator" do
 	File.read("./views/creator.html")
 end
@@ -104,6 +102,7 @@ post "/categories/:category_id" do
 	all_posts = get_all_posts
 	Post.create(category_id: params[:category_id].to_i, title: params[:title], body: params[:body], create_date: Date.current, up_vote: 0, down_vote: 0)
 
+#TWILIO
 	cell_array = []
 	all_subs.each do |x|
 		if params[:category_id].to_i == x[:category_id]
@@ -124,15 +123,11 @@ post "/categories/:category_id" do
 			posts_to_sort.push(x)
 		end
 	end
-
-
+	#now we have the posts in the specific category to sort through to find the newest to send
 	ids_of_posts_to_sort = posts_to_sort.map {|x| x[:id]}
 	most_recent_post = ids_of_posts_to_sort.max
-
 	post_to_send = posts_to_sort.find {|x| x[:id] == most_recent_post}
-
-	binding.pry
-
+	#now we have the post to send
 	category_name = Category.find(params[:category_id])
 	twilio_number = "+12039042566"
 	cell_array.each do |indiv_number|
@@ -146,7 +141,21 @@ post "/categories/:category_id" do
 		)
 		puts message.sid
 	end
-	
+
+#SENDGRID
+	client = SendGrid::Client.new(
+		api_user: 'davidcarlsonberg@gmail.com',
+		api_key: 'SENDGRID_PASSWORD'
+	)
+	client.send(SendGrid::Mail.new(
+		to: 'example@example.com',
+		from: 'taco@cat.limo',
+		subject: 'Hello world!',
+		text: 'Hi there!',
+		html: '<b>Hi there!</b>'
+	))
+	puts client.send(mail)
+
 	redirect "/categories/#{params[:category_id]}"
 end
 
