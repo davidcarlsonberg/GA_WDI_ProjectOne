@@ -18,48 +18,42 @@
 
 <hr>
 	
-<table>
-	<tr>
-		
-		<span>VoteCount: {{up_vote}}</span>
-	</tr>
-
+<table style="width:900px; height: 300px;">
 	<tr>	
-		<td>
-			<h2>{{category_name}}</h2>
-			<h3>{{description}}</h3>
-		</td>
-	</tr>
-
-	<tr>
-		<td>Vote:</td>
-	</tr>
-	<tr>
-		<td>
+		<td style="width:300px;">
+			<h2 style="margin-top:-50px;">{{category_name}}</h2>
+			<h4 style="margin-top:-20px;">{{description}}</h4>
+			<span>VoteCount: {{up_vote}}</span>
+			<br>
 			<form method="POST" action="/categories/{{id}}/up_vote"><input type="hidden" name="category_id"/><button><a href="http://imgur.com/ml389xa"><img src="http://i.imgur.com/ml389xa.png" title="source: imgur.com" /></a></button></form>
-		
+			<br>
 			<form method="POST" action="/categories/{{id}}/down_vote"><input type="hidden" name="category_id"/><button><a href="http://imgur.com/enCOGVj"><img src="http://i.imgur.com/enCOGVj.png" title="source: imgur.com" /></a></button></form>
+		</td>
+
+
+
+		<td>
+			<h4 style="margin: -10px 0px 0px 0px;">Add a New Post</h4>
+				<form method="POST" action="/categories/{{id}}">
+					<input type="hidden" name="category_id"/>
+				<label>Title:</label><br>
+					<textarea type="text" cols="50" rows="1" name="title"></textarea>
+				<br>
+				<label>Body:</label><br>
+					<textarea type="text" cols="80" rows="10" name="body"></textarea>
+				<br>
+				<label>Optional Exp Date:</label><br>
+					<textarea type="text" cols="20" rows="1" placeholder="YYYY-MM-DD" name="expiration_date"></textarea>
+				<br>
+					<button style="background:cyan;">SUBMIT</button>
+				</form>
 		</td>
 	</tr>
 </table>
+
 <hr>
-<h3>Add a New Post</h3>
-<form method="POST" action="/categories/{{id}}">
-		<input type="hidden" name="category_id"/>
-	<label>Title:</label>
-		<input type="text" size="50" name="title"/>
-		<br>
-	<label>Body:</label>
-		<input type="text" size="100" name="body"/>
-		<br>
-		<label>Expiration Date (Optional):</label>
-		<input type="text" size="25" placeholder="YYYY-MM-DD" name="expiration_date"/>
-		<br><br>
-	<button style="background:cyan;">SUBMIT</button>
-	
-</form>
+
 <!-- 	<p style="margin: -20px 0px 10px 0px"><a href="/posts/:category_id/new">Add Post</a></p> -->
-	<hr>
 	<h2>Current Posts</h2>
 	{{#previous_page}}
 		<a href="/categories/{{id}}/page/{{previous_page}}">Previous Page</a>
@@ -69,8 +63,8 @@
 	{{/next_page}}
 	
 	{{#pagination}}
-	<h4><a href="/categories/{{category_id}}/posts/{{id}}">{{title}}</a>&nbsp;<span style="font-size:10px;">created: {{create_date}}</span></h4>
-	<p style="margin-top:-20px;">{{body}}</p>
+	<h4><a href="/categories/{{category_id}}/posts/{{id}}">{{{title}}}</a>&nbsp;<span style="font-size:10px;">created: {{create_date}}</span></h4>
+	<p style="margin-top:-20px;">{{{body}}}</p>
 	{{/pagination}}
 
 	{{#previous_page}}

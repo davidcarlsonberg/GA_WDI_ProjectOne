@@ -9,12 +9,16 @@
 </head>
 
 <body>
-<h2>Enter a new category</h2>
+<p>Nav: <a href="/">Home</a>&nbsp;&nbsp;<a href="/categories">Discussion Topics</a></p>
+	
+	<hr>
+
+<h2>Enter a new Discussion Topic</h2>
 <form method="POST" action="/categories">
-	<label>Name: </label>
+	<label>Name: </label><br>
 	<input type="text" size="50" name="category_name"/>
 	<br><br>
-	<label>Description: </label>
+	<label>Description: </label><br>
 	<input type="text" size="100" name="description"/>
 	<br><br>
 	<button>SUBMIT</button>

@@ -8,32 +8,32 @@ require 'sendgrid-ruby'
 require 'will_paginate'
 require 'will_paginate/active_record'
 require 'will_paginate/array'
+require 'redcarpet'
 require 'pry'
 
 def get_all_categories
 	all_categories = Category.all.each
 	all_categories
 end
+
 def get_all_posts
 	all_posts = Post.all.each
 	all_posts
 end
+
 def get_all_subs
 	all_subscriptions = Subscription.all.each
 	all_subscriptions
 end
 
-#HOMEPAGE
 get "/" do
 	File.read("./views/homepage.html")	
 end
 
-#CREATOR PAGE
 get "/creator" do
 	File.read("./views/creator.html")
 end
 
-#CATEGORIES PAGES
 get "/categories" do
 	all_categories = get_all_categories
 	all_posts = get_all_posts
@@ -43,40 +43,10 @@ end
 get "/categories/new" do
 	File.read('./forms/category_new_form.html')
 end
-post "/categories" do
-	Category.create(category_name: params[:category_name], description: params[:description], up_vote: 0, down_vote: 0)
-	redirect "/categories"
-end
 
 get "/categories/delete" do
 	all_categories = get_all_categories
 	Mustache.render(File.read('./forms/category_delete_form.html'), category: all_categories)
-end
-delete "/categories/delete" do
-	all_posts = get_all_posts
-	all_categories = get_all_categories
-
-	category_to_display = []
-	all_categories.each do |x|
-		if params[:id].to_i == x[:id] 
-			category_to_display.push(x)
-		end
-	end
-
-	posts_in_category_to_delete = []
-	all_posts.each do |x|
-		if params[:id].to_i == x[:category_id]
-			posts_in_category_to_delete.push(x)
-		end
-	end
-
-	if posts_in_category_to_delete.length > 0
-		Mustache.render(File.read('./views/category_cannot_delete_because_posts_exist.html'), category: category_to_display)
-	else
-		Category.delete(params[:id].to_i)
-		redirect "/categories"
-	end
-	
 end
 
 get "/categories/:category_id/page/:page" do
@@ -132,37 +102,78 @@ get "/categories/:category_id/expired_posts" do
 	Mustache.render(File.read('./views/posts_expired.html'), expired_posts: expired_posts)
 end
 
-post "/categories/:category_id" do
-	Post.create(category_id: params[:category_id].to_i, title: params[:title], body: params[:body], create_date: Date.current, up_vote: 0, down_vote: 0, expiration_date: params[:expiration_date])
+get "/categories/:category_id/subscribe" do
+	all_categories = get_all_categories
 
-		all_subs = get_all_subs
-		all_posts = get_all_posts
-#TWILIO
+	category_to_display = {}
+	all_categories.each do |x|
+		if x[:id] == params[:category_id].to_i
+			category_to_display = x
+		end
+	end
+	Mustache.render(File.read('./forms/category_subscribe_form.html'), 
+		category_to_display)
+end
+
+get "/categories/:category_id/unsubscribe" do
+	all_categories = get_all_categories
+
+	category_to_display = {}
+	all_categories.each do |x|
+		if x[:id] == params[:category_id].to_i
+			category_to_display = x
+		end
+	end
+	Mustache.render(File.read('./forms/category_unsubscribe_form.html'), 
+		category_to_display)
+end
+
+get "/posts/:page" do
+	pagination = Post.paginate(:page => params[:page], :per_page => 10).to_ary
+	Mustache.render(File.read('./views/posts_by_page.html'), pagination: pagination, next_page: pagination.next_page, previous_page: pagination.previous_page)
+end
+
+post "/categories" do
+	Category.create(category_name: params[:category_name], description: params[:description], up_vote: 0, down_vote: 0)
+	redirect "/categories"
+end
+
+post "/categories/:category_id" do
+	renderer = Redcarpet::Render::HTML.new
+	markdown = Redcarpet::Markdown.new(renderer)
+	rendered_title = markdown.render(params[:title])
+	rendered_body = markdown.render(params[:body])
+
+	Post.create(category_id: params[:category_id].to_i, title: rendered_title, body: rendered_body, create_date: Date.current, up_vote: 0, down_vote: 0, expiration_date: params[:expiration_date])
+
+	all_subs = get_all_subs
+	all_posts = get_all_posts
+
 	cell_array = []
 	all_subs.each do |x|
 		if params[:category_id].to_i == x[:category_id]
 			cell_array.push(x[:cell])
 		end
 	end
-	#now we have the cell(s) that have subscribed to the given category in an array
+#now we have the cell(s) that have subscribed to the given category in an array
 	email_array = []
 	all_subs.each do |x|
 		if params[:category_id].to_i == x[:category_id]
 			email_array.push(x[:email])
 		end
 	end
-	#now we have the email(s) that have subscribed to the given categry in an array
+#now we have the email(s) that have subscribed to the given categry in an array
 	posts_to_sort = []
 	all_posts.each do |x|
 		if params[:category_id].to_i == x[:category_id]
 			posts_to_sort.push(x)
 		end
 	end
-	#now we have the posts in the specific category to sort through to find the newest to send
+#now we have the posts in the specific category to sort through to find the newest to send
 	ids_of_posts_to_sort = posts_to_sort.map {|x| x[:id]}
 	most_recent_post = ids_of_posts_to_sort.max
 	post_to_send = posts_to_sort.find {|x| x[:id] == most_recent_post}
-	#now we have the post to send
+#now we have the post to send
 	category_name = Category.find(params[:category_id])
 	twilio_number = "+12039042566"
 	cell_array.each do |indiv_number|
@@ -176,7 +187,6 @@ post "/categories/:category_id" do
 		)
 	end
 
-#SENDGRID
 	client = SendGrid::Client.new(
 		api_user: "davidcarlsonberg",
 		api_key: "SendGrid195"
@@ -217,20 +227,6 @@ post "/categories/:category_id/down_vote" do
 	redirect "/categories/#{params[:category_id]}/page/1"
 end
 
-#SUBSCRIPTIONS PAGES
-get "/categories/:category_id/subscribe" do
-	all_categories = get_all_categories
-
-	category_to_display = {}
-	all_categories.each do |x|
-		if x[:id] == params[:category_id].to_i
-			category_to_display = x
-		end
-	end
-	Mustache.render(File.read('./forms/category_subscribe_form.html'), 
-		category_to_display)
-end
-
 post "/categories/:category_id/subscribe" do
 	cell = params[:cell].insert(0, "+1").gsub("-","")
 	all_subs = get_all_subs
@@ -256,30 +252,34 @@ post "/categories/:category_id/subscribe" do
 	else
 		Mustache.render(File.read('./views/already_subscribed.html'), category: category_to_display)
 	end
-
-	# all_subs.each do |x|
-	# 	if (x[:cell] == cell || x[:email] == params[:email]) && (params[:category_id].to_i == x[:category_id])
-	# 		Mustache.render(File.read('./views/already_subscribed.html'), category: category_to_display)
-	# 	else
-	# 		Subscription.create(user_id: 0, category_id: params[:category_id].to_i, post_id: 0, comment_id: 0, cell: cell, email: params[:email])
-	# 		redirect "/categories/#{params[:category_id]}/page/1"
-	# 	end
-	# end
-
 end
 
-get "/categories/:category_id/unsubscribe" do
+delete "/categories/delete" do
+	all_posts = get_all_posts
 	all_categories = get_all_categories
 
-	category_to_display = {}
+	category_to_display = []
 	all_categories.each do |x|
-		if x[:id] == params[:category_id].to_i
-			category_to_display = x
+		if params[:id].to_i == x[:id] 
+			category_to_display.push(x)
 		end
 	end
-	Mustache.render(File.read('./forms/category_unsubscribe_form.html'), 
-		category_to_display)
+
+	posts_in_category_to_delete = []
+	all_posts.each do |x|
+		if params[:id].to_i == x[:category_id]
+			posts_in_category_to_delete.push(x)
+		end
+	end
+
+	if posts_in_category_to_delete.length > 0
+		Mustache.render(File.read('./views/category_cannot_delete_because_posts_exist.html'), category: category_to_display)
+	else
+		Category.delete(params[:id].to_i)
+		redirect "/categories"
+	end
 end
+
 delete "/categories/:category_id/unsubscribe" do
 	all_subs = get_all_subs
 	cell = params[:cell].insert(0, "+1").gsub("-","")
@@ -297,35 +297,3 @@ delete "/categories/:category_id/unsubscribe" do
 
 	redirect "/categories/#{params[:category_id]}/page/1"
 end
-
-
-
-#POSTS PAGES
-get "/posts/:page" do
-	pagination = Post.paginate(:page => params[:page], :per_page => 10).to_ary
-	Mustache.render(File.read('./views/posts_by_page.html'), pagination: pagination, next_page: pagination.next_page, previous_page: pagination.previous_page)
-end
-
-
-
-#COMMENTS PAGES (necessary?)
-# get "/comments" do
-# 	File.read ("./views/comments.html")
-# end
-# get "/comments/new" do
-
-# end
-# get "/comments/comment_id" do
-
-# end
-
-#USERS PAGES
-# get "/users" do
-
-# end
-# get "/users/new" do
-
-# end
-# get "/users/user_id" do
-
-# end
