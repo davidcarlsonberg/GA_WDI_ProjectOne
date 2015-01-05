@@ -1,15 +1,15 @@
 require './lib/connection.rb'
 require './lib/classes.rb'
-require 'sinatra'
-require 'sinatra/reloader'
+# require 'sinatra'
+# require 'sinatra/reloader'
 require 'mustache'
 # require 'twilio-ruby'
-require 'sendgrid-ruby'
-require 'will_paginate'
-require 'will_paginate/active_record'
-require 'will_paginate/array'
-require 'redcarpet'
-require 'pry'
+# require 'sendgrid-ruby'
+# require 'will_paginate'
+# require 'will_paginate/active_record'
+# require 'will_paginate/array'
+# require 'redcarpet'
+# require 'pry'
 
 def get_all_categories
 	all_categories = Category.all.each
