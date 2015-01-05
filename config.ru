@@ -1,0 +1,2 @@
+require './server'
+Sinatra::Application
