@@ -1,6 +1,7 @@
 source "https://www.rubygems.org"
 
 gem "sinatra"
+gem "sinatra-contrib"
 gem "mustache"
 gem "pg"
 gem "twilio-ruby"
