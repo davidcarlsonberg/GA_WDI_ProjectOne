@@ -30,7 +30,7 @@ CREATE TABLE subscriptions (
 	user_id integer,
 	category_id integer,
 	post_id integer,
-	comment_id integer
+	comment_id integer,
 	cell text,
 	email text
 );
