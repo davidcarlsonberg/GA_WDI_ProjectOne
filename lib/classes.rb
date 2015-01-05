@@ -1,7 +1,7 @@
 require 'active_record'
 
 class Category < ActiveRecord::Base
-	has_many :posts
+	#has_many :posts
 end
 
 class Post < ActiveRecord::Base

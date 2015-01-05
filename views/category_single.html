@@ -63,10 +63,10 @@
 		<a href="/categories/{{id}}/page/{{next_page}}">Next Page</a>
 	{{/next_page}}
 	
-	{{#pagination}}
-	<h4><a href="/categories/{{category_id}}/posts/{{id}}">{{{title}}}</a>&nbsp;<span style="font-size:10px;">created: {{create_date}}</span></h4>
-	<p style="margin-top:-20px;">{{{body}}}</p>
-	{{/pagination}}
+	{{#posts}}
+		<h4><a href="/categories/{{category_id}}/posts/{{id}}">{{{title}}}</a>&nbsp;<span style="font-size:10px;">created: {{create_date}}</span></h4>
+		<p style="margin-top:-20px;">{{{body}}}</p>
+	{{/posts}}
 
 	{{#previous_page}}
 		<a href="/categories/{{id}}/page/{{previous_page}}">Previous Page</a>
@@ -76,11 +76,13 @@
 	{{/next_page}}
 	<hr>
 
-{{/category}}
+
 
 	{{#expired_posts}}
-	<h4><a href="/categories/{{category_id}}/expired_posts">View Expired Posts</a></hr>
+		<h4><a href="/categories/{{id}}/expired_posts">View Expired Posts</a></hr>
 	{{/expired_posts}}
+
+{{/category}}
 
 </body>
 

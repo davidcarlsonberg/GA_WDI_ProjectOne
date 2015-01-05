@@ -1,7 +1,7 @@
 require './lib/connection.rb'
 require './lib/classes.rb'
 require 'sinatra'
-# require 'sinatra/reloader'
+require 'sinatra/reloader'
 require 'mustache'
 require 'twilio-ruby'
 require 'sendgrid-ruby'
@@ -50,31 +50,23 @@ get "/categories/delete" do
 end
 
 get "/categories/:category_id/page/:page" do
-	all_categories = get_all_categories
-	all_posts = get_all_posts
+	category = Category.find_by({id: params[:category_id]})
 
-	category_to_display = []
-	all_categories.each do |x|
-		if x[:id] == params[:category_id].to_i
-			category_to_display.push(x)
-		end
-	end
+	posts = Post
+		.where({category_id: params[:category_id]})
+		.where('expiration_date > ? OR expiration_date IS NULL', Date.today)
+		.paginate(:page => params[:page], :per_page => 10)
 
-	posts_to_display = []
-	expired_posts = []
-	all_posts.each do |x|
-		if (x[:category_id] == params[:category_id].to_i) && 
-			(x[:expiration_date] == nil || x[:expiration_date] > Date.current)
-			posts_to_display.push(x)
-		elsif x[:category_id] == params[:category_id].to_i && x[:expiration_date] != nil && x[:expiration_date] < Date.current
-			expired_posts.push(x)
-		end
-	end
+	expired_posts_exists = Post
+		.where({category_id: params[:category_id]})
+		.where('expiration_date <= ?', Date.today).length > 0
 
-	pagination = posts_to_display.paginate(:page => params[:page], :per_page => 10)
-
-	Mustache.render(File.read('./views/category_single.html'), 
-		category: category_to_display, posts: posts_to_display, expired_posts: expired_posts, pagination: pagination, next_page: pagination.next_page, previous_page: pagination.previous_page)
+	Mustache.render(File.read('./views/category_single.html'), {
+		category: category, posts: posts.to_a, 
+		next_page: posts.next_page, 
+		previous_page: posts.previous_page, 
+		expired_posts: expired_posts_exists
+	})
 end
 
 get "/categories/:category_id/posts/:post_id" do
