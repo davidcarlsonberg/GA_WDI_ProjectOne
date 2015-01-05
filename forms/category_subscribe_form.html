@@ -1,3 +1,15 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>Delete a Category Form</title>
+	<link rel="stylesheet" type="text/css" href="./stylesheets/style.css" />
+</head>
+
+<body>
+
 <form method="POST" action="/categories/{{id}}/subscribe">
 	<input type="hidden" value ="{{id}}" name="category_id"/>
 	<label>Cell to receive text updates: </label>
@@ -8,3 +20,7 @@
 	<br><br>
 	<button>SUBSCRIBE</button>
 </form>
+
+</body>
+
+</html>

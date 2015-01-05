@@ -1,0 +1,33 @@
+body{
+	background-image: url("./images/.png");
+	background-color: #7FFFD4;
+	font-family: Trebuchet;
+}
+
+h1{
+	font-family: Helvetica;
+	font-style: italic;
+	color: green;
+	background-color: gray;
+	border: 3px solid blue;
+}
+
+h2{
+	border: 3px dotted orange;
+}
+
+h3{
+
+}
+
+a{
+	color: #707070;
+}
+
+a:visited{
+	color: #999999;
+}
+
+a:hover{
+	color: blue;
+}

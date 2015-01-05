@@ -1,7 +1,7 @@
 CREATE TABLE categories (
 	id serial primary key,
-	category_name varchar(50),
-	description varchar(255),
+	category_name text,
+	description text,
 	up_vote integer,
 	down_vote integer
 );
@@ -9,9 +9,10 @@ CREATE TABLE categories (
 CREATE TABLE posts (
 	id serial primary key,
 	category_id integer,
-	title varchar(255),
+	title text,
 	body text,
 	create_date date,
+	expiration_date date,
 	up_vote integer,
 	down_vote integer
 );
@@ -24,18 +25,20 @@ CREATE TABLE comments (
 	down_vote integer
 );
 
-CREATE TABLE users (
-	id serial primary key,
-	name varchar(255),
-	email varchar(255),
-	cell varchar(15),
-	user_id integer
-);
-
 CREATE TABLE subscriptions (
 	id serial primary key,
 	user_id integer,
 	category_id integer,
 	post_id integer,
 	comment_id integer
+	cell text,
+	email text
+);
+
+CREATE TABLE users (
+	id serial primary key,
+	name text,
+	email text,
+	cell text,
+	user_id integer
 );

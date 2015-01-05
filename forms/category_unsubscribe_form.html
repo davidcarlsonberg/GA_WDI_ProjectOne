@@ -1,3 +1,15 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<title>Delete a Category Form</title>
+	<link rel="stylesheet" type="text/css" href="./stylesheets/style.css" />
+</head>
+
+<body>
+
 <form method="POST" action="/categories/{{id}}/unsubscribe">
 	<input type="hidden" name="_method" value="DELETE"/>
 	<input type="hidden" value ="{{id}}" name="category_id"/>
@@ -9,3 +21,7 @@
 	<br><br>
 	<button>UNSUBSCRIBE</button>
 </form>
+
+</body>
+
+</html>
