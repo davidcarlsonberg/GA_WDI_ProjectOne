@@ -1,11 +1,9 @@
-source "https://rubydocs.org"
+source "https://www.rubygems.org"
 
 gem "sinatra"
-gem "sinatra/reloader"
 gem "mustache"
 gem "pg"
 gem "twilio-ruby"
 gem "sendgrid-ruby"
 gem "will_paginate"
-gem "will_paginate/active_record"
 gem "redcarpet"
