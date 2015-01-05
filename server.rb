@@ -62,7 +62,8 @@ get "/categories/:category_id/page/:page" do
 		.where('expiration_date <= ?', Date.today).length > 0
 
 	Mustache.render(File.read('./views/category_single.html'), {
-		category: category, posts: posts.to_a, 
+		category: category, 
+		posts: posts.to_a, 
 		next_page: posts.next_page, 
 		previous_page: posts.previous_page, 
 		expired_posts: expired_posts_exists

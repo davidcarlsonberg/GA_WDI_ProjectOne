@@ -5,11 +5,11 @@ class Category < ActiveRecord::Base
 end
 
 class Post < ActiveRecord::Base
-	has_many :comments
+	# has_many :comments
 end
 
 class Comment < ActiveRecord::Base
-	belongs_to :posts
+	# belongs_to :posts
 end
 
 class User < ActiveRecord::Base
