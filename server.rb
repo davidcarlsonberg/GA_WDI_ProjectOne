@@ -1,6 +1,6 @@
 require './lib/connection.rb'
 require './lib/classes.rb'
-# require 'sinatra'
+require 'sinatra'
 # require 'sinatra/reloader'
 require 'mustache'
 require 'twilio-ruby'
