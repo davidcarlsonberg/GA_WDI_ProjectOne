@@ -34,11 +34,3 @@ CREATE TABLE subscriptions (
 	cell text,
 	email text
 );
-
-CREATE TABLE users (
-	id serial primary key,
-	name text,
-	email text,
-	cell text,
-	user_id integer
-);
