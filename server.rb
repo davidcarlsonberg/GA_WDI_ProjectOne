@@ -59,7 +59,7 @@ get "/categories/:category_id/page/:page" do
 
 	expired_posts_exists = Post
 		.where({category_id: params[:category_id]})
-		.where('expiration_date <= ?', Date.today).length > 0
+		.where('expiration_date < ?', Date.today).length > 0
 
 	Mustache.render(File.read('./views/category_single.html'), {
 		category: category, 
@@ -71,54 +71,28 @@ get "/categories/:category_id/page/:page" do
 end
 
 get "/categories/:category_id/posts/:post_id" do
-	all_categories = get_all_categories
-	all_posts = get_all_posts
-
-	post_to_display = []
-	all_posts.each do |x|
-		if params[:post_id].to_i == x[:id]
-			post_to_display = x
-		end
-	end
-
-	Mustache.render(File.read('./views/post_single.html'), post: post_to_display)	
+	posts = Post
+		.where({category_id: params[:category_id]})
+		.where({id: params[:post_id]})
+	Mustache.render(File.read('./views/post_single.html'), posts: posts.to_a)	
 end
 
 get "/categories/:category_id/expired_posts" do
-	all_posts = get_all_posts
-	expired_posts = []
-	all_posts.each do |x|
-		if x[:category_id] == params[:category_id].to_i && x[:expiration_date] != nil && x[:expiration_date] < Date.current
-			expired_posts.push(x)
-		end
-	end
-	Mustache.render(File.read('./views/posts_expired.html'), expired_posts: expired_posts)
+	expired_posts = Post
+		.where({category_id: params[:category_id]})
+		.where('expiration_date < ?', Date.current)
+	Mustache.render(File.read('./views/posts_expired.html'), expired_posts: expired_posts.to_a)
 end
 
 get "/categories/:category_id/subscribe" do
-	all_categories = get_all_categories
-
-	category_to_display = {}
-	all_categories.each do |x|
-		if x[:id] == params[:category_id].to_i
-			category_to_display = x
-		end
-	end
-	Mustache.render(File.read('./forms/category_subscribe_form.html'), 
-		category_to_display)
+	category = Category.where({id: params[:category_id].to_i}).to_a
+	Mustache.render(File.read('./forms/category_subscribe_form.html'), {category: category})
 end
 
 get "/categories/:category_id/unsubscribe" do
-	all_categories = get_all_categories
-
-	category_to_display = {}
-	all_categories.each do |x|
-		if x[:id] == params[:category_id].to_i
-			category_to_display = x
-		end
-	end
+	category = Category.where({id: params[:category_id].to_i}).to_a
 	Mustache.render(File.read('./forms/category_unsubscribe_form.html'), 
-		category_to_display)
+		category: category)
 end
 
 get "/posts/:page" do
@@ -285,7 +259,6 @@ delete "/categories/:category_id/unsubscribe" do
 		# 	subscription_to_delete = x
 		end
 	end
-		binding.pry
 	Subscription.delete(subscription_to_delete[:id])
 
 	redirect "/categories/#{params[:category_id]}/page/1"

@@ -9,7 +9,7 @@
 </head>
 
 <body>
-
+{{#category}}
 <form method="POST" action="/categories/{{id}}/subscribe">
 	<input type="hidden" value ="{{id}}" name="category_id"/>
 	<label>Cell to receive text updates: </label>
@@ -20,7 +20,7 @@
 	<br><br>
 	<button>SUBSCRIBE</button>
 </form>
-
+{{/category}}
 </body>
 
 </html>

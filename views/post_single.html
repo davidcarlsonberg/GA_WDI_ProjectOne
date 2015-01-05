@@ -4,17 +4,17 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Welcome to Posts</title>
-	<link rel="stylesheet" type="text/css" href="./stylesheets/style.css" />
+	<link rel="stylesheet" type="text/css" href="/stylesheets/style.css" />
 </head>
 
 <body>
 <p>Nav: <a href="/">Home</a>&nbsp;&nbsp;<a href="/categories">Discussion Topics</a></p>
 <hr>
 
-{{#post}}
-	<h4>{{{title}}}</h4>
-	<p>{{{body}}}</p>
-{{/post}}
+{{#posts}}
+	<h4>{{{title}}}&nbsp;<span style="font-size:10px">create date: {{create_date}}</span></h4>
+	<p style="margin-top: -20px;">{{{body}}}</p>
+{{/posts}}
 
 <body>
 
