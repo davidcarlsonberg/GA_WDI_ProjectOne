@@ -96,7 +96,7 @@ get "/categories/:category_id/unsubscribe" do
 end
 
 get "/posts/:page" do
-	pagination = Post.paginate(:page => params[:page], :per_page => 10).to_ary
+	pagination = Post.paginate(:page => params[:page], :per_page => 10).to_a
 	Mustache.render(File.read('./views/posts_by_page.html'), pagination: pagination, next_page: pagination.next_page, previous_page: pagination.previous_page)
 end
 
@@ -113,37 +113,19 @@ post "/categories/:category_id" do
 
 	Post.create(category_id: params[:category_id].to_i, title: rendered_title, body: rendered_body, create_date: Date.current, up_vote: 0, down_vote: 0, expiration_date: params[:expiration_date])
 
-	all_subs = get_all_subs
-	all_posts = get_all_posts
+	subs = Subscription.where({category_id: params[:category_id].to_i}).to_a
+	cells = subs.map{|x| x[:cell]}
+	emails = subs.map{|x| x[:email]}
 
-	cell_array = []
-	all_subs.each do |x|
-		if params[:category_id].to_i == x[:category_id]
-			cell_array.push(x[:cell])
-		end
-	end
-#now we have the cell(s) that have subscribed to the given category in an array
-	email_array = []
-	all_subs.each do |x|
-		if params[:category_id].to_i == x[:category_id]
-			email_array.push(x[:email])
-		end
-	end
-#now we have the email(s) that have subscribed to the given categry in an array
-	posts_to_sort = []
-	all_posts.each do |x|
-		if params[:category_id].to_i == x[:category_id]
-			posts_to_sort.push(x)
-		end
-	end
-#now we have the posts in the specific category to sort through to find the newest to send
+	posts_to_sort = Post.where({category_id: params[:category_id].to_i}).to_a
+
 	ids_of_posts_to_sort = posts_to_sort.map {|x| x[:id]}
 	most_recent_post = ids_of_posts_to_sort.max
 	post_to_send = posts_to_sort.find {|x| x[:id] == most_recent_post}
 #now we have the post to send
 	category_name = Category.find(params[:category_id])
 	twilio_number = "+12039042566"
-	cell_array.each do |indiv_number|
+	cells.each do |indiv_number|
 		account_sid = "ACea0b3bc7d136da7ae7f867e1ca4984de"
 		auth_token = "79d901fe9ef2849fcd6d2907be12ce04"
 		@client = Twilio::REST::Client.new account_sid, auth_token
@@ -158,7 +140,7 @@ post "/categories/:category_id" do
 		api_user: "davidcarlsonberg",
 		api_key: "SendGrid195"
 	)
-	email_array.each do |indiv_email|
+	emails.each do |indiv_email|
 		client.send(SendGrid::Mail.new(
 			to: "#{indiv_email}",
 			from: "davidcarlsonberg@gmail.com",
@@ -171,6 +153,8 @@ post "/categories/:category_id" do
 end
 
 post "/categories/:category_id/up_vote" do
+	
+binding.pry
 	all_categories = get_all_categories
 	category_to_update = {}
 	all_categories.each do |x|
