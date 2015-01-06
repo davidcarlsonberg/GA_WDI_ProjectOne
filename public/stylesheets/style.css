@@ -1,6 +1,7 @@
 body{
-	background-image: url("./images/.png");
-	background-color: #7FFFD4;
+	background-image: url("/images/background_gray.png");
+	background-attachment: fixed;
+	/*background-color: #7FFFD4;*/
 	font-family: Arial;
 }
 
@@ -10,13 +11,14 @@ h1{
 	text-align: center;
 	color: green;
 	background-color: #999999;
-	border: 3px solid blue;
+	border: 2px solid #999999;
 	border-radius: 40%;
 }
 
 h2{
 	text-align: center;
-	border: 3px solid orange;
+	background-color: lightblue;
+	border: 2px solid lightblue;
 	border-radius: 25%;
 }
 
@@ -25,7 +27,7 @@ h3{
 }
 
 a{
-	color: #707070;
+	color: #575757;
 }
 
 a:visited{
@@ -33,5 +35,17 @@ a:visited{
 }
 
 a:hover{
-	color: blue;
+	color: orange;
+}
+
+textarea{
+	background-color: lightyellow;
+}
+
+input{
+	background-color: lightyellow;
+}
+
+button{
+	background-color: lightblue;
 }
