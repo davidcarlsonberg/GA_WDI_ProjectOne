@@ -55,10 +55,11 @@ get "/categories/:category_id/page/:page" do
 	posts = Post
 		.where({category_id: params[:category_id]})
 		.where('expiration_date > ? OR expiration_date IS NULL', Date.today)
+		.order(:create_date)
 		.paginate(:page => params[:page], :per_page => 10)
 
-	posts_rev = posts.reverse
- 
+ 	posts_rev = posts.reverse
+
 	expired_posts_exists = Post
 		.where({category_id: params[:category_id]})
 		.where('expiration_date < ?', Date.today).length > 0
@@ -108,7 +109,7 @@ post "/categories" do
 end
 
 post "/categories/:category_id" do
-	renderer = Redcarpet::Render::HTML.new
+	renderer = Redcarpet::Render::HTML.new({escape_html: true, no_links: true})
 	markdown = Redcarpet::Markdown.new(renderer)
 	rendered_title = markdown.render(params[:title])
 	rendered_body = markdown.render(params[:body])

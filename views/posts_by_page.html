@@ -4,14 +4,14 @@
 <head>
 	<meta charset="UTF-8">
 	<title>Welcome to Posts</title>
-	<link rel="stylesheet" type="text/css" href="./stylesheets/style.css" />
+	<link rel="stylesheet" type="text/css" href="/stylesheets/style.css" />
 </head>
 
 <body>
-	<p>Nav: <a href="/">Home</a>&nbsp;&nbsp;<a href="/categories">Discussion Topics</a></p>
+	<span>Nav: <a href="/">Home</a>&nbsp;&nbsp;<a href="/categories">Discussion Topics</a></span>
 	<hr>
 
-	<h1>Welcome to the posts page...basically a feed of posts irregardless of category...Fun!</h1>
+	<h1>Welcome a feed of all posts...Fun!</h1>
 
 	{{#previous_page}}
 		<a href="/posts/{{previous_page}}">Previous Page</a>
@@ -21,8 +21,15 @@
 	{{/next_page}}
 
 	{{#posts}}
-		<h4>{{{title}}}</h4>
-		<p style="margin-top:-20px;">{{{body}}}</p>
+	<table>
+		<tr>
+			<td class="post">
+				<b>{{{title}}}</b>
+				{{{body}}}
+				<span style="font-size:10px;">{{create_date}}</span>
+			</td>
+		</tr>
+	</table>
 	{{/posts}}
 
 	{{#previous_page}}

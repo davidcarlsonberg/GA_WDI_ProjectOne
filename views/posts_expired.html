@@ -10,12 +10,19 @@
 
 <body>
 
-<p>Nav: <a href="/">Home</a>&nbsp;&nbsp;<a href="/categories">Discussion Topics</a></p>
+<span>Nav: <a href="/">Home</a>&nbsp;&nbsp;<a href="/categories">Discussion Topics</a></span>
 <hr>
 
 {{#expired_posts}}
-	<h4>{{title}}&nbsp;<span style="font-size:10px">create date: {{create_date}}</span></h4>
-	<p style="margin-top: -20px;">{{body}}</p>
+	<table>
+		<tr>
+			<td class="post">
+				<b>{{{title}}}</b>
+				{{{body}}}
+				<span style="font-size:10px;">{{create_date}}</span>
+			</td>
+		</tr>
+	</table>
 {{/expired_posts}}
 
 </body>

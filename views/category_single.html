@@ -60,16 +60,23 @@
 		<a href="/categories/{{id}}/page/{{previous_page}}">Previous Page</a>
 	{{/previous_page}}
 	{{#next_page}}
-		<a href="/categories/{{id}}/page/{{next_page}}">Next Page</a>
+		<a href="/categories/{{id}}/page/{{next_page}}">Next Page</a><br><br>
 	{{/next_page}}
-	
+
 	{{#posts}}
-		<h4><a href="/categories/{{category_id}}/posts/{{id}}">{{{title}}}</a>&nbsp;<span style="font-size:10px;">created: {{create_date}}</span></h4>
-		<p style="margin-top:-20px;">{{{body}}}</p>
+	<table>
+		<tr>
+			<td class="post">
+				<b>{{{title}}}</b>
+				{{{body}}}
+				<span style="font-size:10px;">{{create_date}}</span>
+			</td>
+		</tr>
+	</table>
 	{{/posts}}
 
 	{{#previous_page}}
-		<a href="/categories/{{id}}/page/{{previous_page}}">Previous Page</a>
+		<br><br><a href="/categories/{{id}}/page/{{previous_page}}">Previous Page</a>
 	{{/previous_page}}
 	{{#next_page}}
 		<a href="/categories/{{id}}/page/{{next_page}}">Next Page</a>

@@ -15,8 +15,15 @@
 	<h1>Welcome to the posts page...basically a feed of posts irregardless of category...Fun!</h1>
 
 	{{#posts}}
-		<h3>{{title}}</h3>
-		<p style="margin-top:-20px;">{{body}}</p>
+	<table>
+		<tr>
+			<td class="post">
+				<b>{{{title}}}</b>
+				{{{body}}}
+				<span style="font-size:10px;">{{create_date}}</span>
+			</td>
+		</tr>
+	</table>
 	{{/posts}}
 	
 <body>
