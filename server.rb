@@ -57,13 +57,15 @@ get "/categories/:category_id/page/:page" do
 		.where('expiration_date > ? OR expiration_date IS NULL', Date.today)
 		.paginate(:page => params[:page], :per_page => 10)
 
+	posts_rev = posts.reverse
+ 
 	expired_posts_exists = Post
 		.where({category_id: params[:category_id]})
 		.where('expiration_date < ?', Date.today).length > 0
 
 	Mustache.render(File.read('./views/category_single.html'), {
 		category: category, 
-		posts: posts.to_a, 
+		posts: posts_rev.to_a, 
 		next_page: posts.next_page, 
 		previous_page: posts.previous_page, 
 		expired_posts: expired_posts_exists
@@ -96,8 +98,8 @@ get "/categories/:category_id/unsubscribe" do
 end
 
 get "/posts/:page" do
-	pagination = Post.paginate(:page => params[:page], :per_page => 10).to_a
-	Mustache.render(File.read('./views/posts_by_page.html'), pagination: pagination, next_page: pagination.next_page, previous_page: pagination.previous_page)
+	posts = Post.paginate(:page => params[:page], :per_page => 10).to_a
+	Mustache.render(File.read('./views/posts_by_page.html'), posts: posts, next_page: posts.next_page, previous_page: posts.previous_page)
 end
 
 post "/categories" do
@@ -153,27 +155,13 @@ post "/categories/:category_id" do
 end
 
 post "/categories/:category_id/up_vote" do
-	
-binding.pry
-	all_categories = get_all_categories
-	category_to_update = {}
-	all_categories.each do |x|
-		if x[:id] == params[:category_id].to_i
-			category_to_update = x
-		end
-	end
+	category_to_update = Category.find(params[:category_id].to_i)
 	Category.update(params[:category_id].to_i, up_vote: (category_to_update[:up_vote] + 1))
 	redirect "/categories/#{params[:category_id]}/page/1"
 end
 
 post "/categories/:category_id/down_vote" do
-	all_categories = get_all_categories
-	category_to_update = {}
-	all_categories.each do |x|
-		if x[:id] == params[:category_id].to_i
-			category_to_update = x
-		end
-	end
+	category_to_update = Category.find(params[:category_id].to_i)
 	Category.update(params[:category_id].to_i, up_vote: (category_to_update[:up_vote] - 1))
 	redirect "/categories/#{params[:category_id]}/page/1"
 end
@@ -181,14 +169,8 @@ end
 post "/categories/:category_id/subscribe" do
 	cell = params[:cell].insert(0, "+1").gsub("-","")
 	all_subs = get_all_subs
-	all_categories = get_all_categories
 
-	category_to_display = {}
-	all_categories.each do |x|
-		if x[:id] == params[:category_id].to_i
-			category_to_display = x
-		end
-	end
+	category_to_display = Category.where(id: params[:category_id].to_i)
 
 	sub = []
 	all_subs.each do |x|
@@ -197,11 +179,16 @@ post "/categories/:category_id/subscribe" do
 		end
 	end
 
+	# subs_new = Subscription
+	# 	.where(category_id: params[:category_id].to_i)
+	# 	.find_by(cell: cell)
+	# 	.find_by(email: params[:email])
+
 	if sub.empty?
 		Subscription.create(user_id: 0, category_id: params[:category_id].to_i, post_id: 0, comment_id: 0, cell: cell, email: params[:email])
 		redirect "/categories/#{params[:category_id]}/page/1"
 	else
-		Mustache.render(File.read('./views/already_subscribed.html'), category: category_to_display)
+		Mustache.render(File.read('./views/already_subscribed.html'), category: category_to_display.to_a)
 	end
 end
 

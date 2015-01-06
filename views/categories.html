@@ -11,28 +11,21 @@
 	<p>Nav: <a href="/">Home</a>&nbsp;&nbsp;<a href="/categories">Discussion Topics</a></p>
 <hr>
 <h1>Welcome to the Discussion Topics!</h1>
-<p style="margin:-20px 0px 20px 2px;"><a href="/categories/new">Create a Discussion Topic</a>&nbsp;&nbsp;<a href="/categories/delete">Delete a 
+<p style="margin:-20px 0px 20px 2px;"><a href="/categories/new">Create a Discussion Topic</a>&nbsp;&nbsp;<a href="/categories/delete">Delete an Empty 
 Discussion Topic</a></p>
 
 {{#categories}}
 <table>
 	<tr>
-		<!-- <td><form method="POST" action="/categories/{{id}}/vote"><button>UpVote</button></form><form method="POST" action="/categories/{{id}}"><button>DownVote</button></form></td> -->
-		
-		<td style="width:200px;"><a href="/categories/{{id}}/page/1">{{category_name}}</a>&nbsp;&nbsp;</td>
-		<td>{{description}}</td>
+		<td style="width:200px;">
+			<a href="/categories/{{id}}/page/1"><b>{{category_name}}</b></a>&nbsp;&nbsp;
+		</td>
+		<td>
+			{{description}}
+		</td>
 	</tr>
 </table>
 {{/categories}}
-
-<!-- {{#posts}}
-			<td>
-				<h4>{{title}}</h4>
-				<p>{{body}}</p>
-			</td>
-		</tr>
-{{/posts}} -->
-
 
 </table>
 </body>

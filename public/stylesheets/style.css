@@ -1,23 +1,27 @@
 body{
 	background-image: url("./images/.png");
 	background-color: #7FFFD4;
-	font-family: Trebuchet;
+	font-family: Arial;
 }
 
 h1{
 	font-family: Helvetica;
 	font-style: italic;
+	text-align: center;
 	color: green;
-	background-color: gray;
+	background-color: #999999;
 	border: 3px solid blue;
+	border-radius: 40%;
 }
 
 h2{
-	border: 3px dotted orange;
+	text-align: center;
+	border: 3px solid orange;
+	border-radius: 25%;
 }
 
 h3{
-
+	
 }
 
 a{
